@@ -22,9 +22,6 @@ class CarClassificationTester:
         num_classes=8,
         grid_rows=8,
         grid_cols=10,
-        embed_dim=768,
-        num_heads=12,
-        dropout=0.1,
     ):
         self.test_dir = test_dir
         self.class_names = class_names
@@ -32,13 +29,10 @@ class CarClassificationTester:
         self.num_classes = num_classes
         self.grid_rows = grid_rows
         self.grid_cols = grid_cols
-        self.embed_dim = embed_dim
-        self.num_heads = num_heads
-        self.dropout = dropout
         self.model = self._load_model()
         self.transform = transforms.Compose(
             [
-                transforms.Resize((self.img_size, self.img_size)),
+                transforms.Resize((224, 224)),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ]
@@ -53,12 +47,7 @@ class CarClassificationTester:
             model_files.sort()
             self.model_path = os.path.join(results_dir, model_files[-1])
 
-        model = HybridEfficientNetViT(
-            num_classes=self.num_classes,
-            embed_dim=self.embed_dim,
-            num_heads=self.num_heads,
-            dropout=self.dropout,
-        )
+        model = HybridEfficientNetViT(num_classes=self.num_classes)
         model.load_state_dict(torch.load(self.model_path, map_location="cpu"))
         model.eval()
         return model
@@ -88,6 +77,7 @@ class CarClassificationTester:
 
     def predict(self, image_path):
         img = Image.open(image_path).convert("RGB")
+        img = img.resize((48, 48), Image.LANCZOS)
         input_tensor = self.transform(img).unsqueeze(0)
 
         with torch.no_grad():
