@@ -118,109 +118,98 @@ class TrainingEvaluation:
         return class_counts
 
     def plot_training_progress(self):
-        """Visualize training/validation loss, accuracy, learning rate, and summary stats."""
+        """Visualize training/validation loss, accuracy, learning rate, and summary stats. All charts are split except acc-loss val-train which are combined."""
         epochs = range(1, len(self.results["train_losses"]) + 1)
-        fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(16, 18))
 
-        # Loss curves
-        ax1.plot(
+        # Loss curves (train and val)
+        plt.figure(figsize=(10, 6))
+        plt.plot(
             epochs,
             self.results["train_losses"],
             "b-",
             label="Training Loss",
             linewidth=2,
         )
-        ax1.plot(
+        plt.plot(
             epochs,
             self.results["val_losses"],
             "r-",
             label="Validation Loss",
             linewidth=2,
         )
-        ax1.set_title("Training and Validation Loss", fontsize=14, fontweight="bold")
-        ax1.set_xlabel("Epoch")
-        ax1.set_ylabel("Loss")
-        ax1.legend()
-        ax1.grid(True, alpha=0.3)
+        plt.title("Training and Validation Loss", fontsize=14, fontweight="bold")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show()
 
-        # Accuracy curve
-        ax2.plot(
+        # Accuracy curves (train and val)
+        plt.figure(figsize=(10, 6))
+        plt.plot(
             epochs,
-            self.results["val_accuracies"],
-            "g-",
+            self.results.get("train_accuracies", []),
+            "b-",
+            label="Training Accuracy",
             linewidth=2,
             marker="o",
             markersize=4,
         )
-        ax2.set_title("Validation Accuracy", fontsize=14, fontweight="bold")
-        ax2.set_xlabel("Epoch")
-        ax2.set_ylabel("Accuracy (%)")
-        ax2.grid(True, alpha=0.3)
-        ax2.set_ylim([0, 100])
+        plt.plot(
+            epochs,
+            self.results["val_accuracies"],
+            "g-",
+            label="Validation Accuracy",
+            linewidth=2,
+            marker="o",
+            markersize=4,
+        )
+        plt.title("Training and Validation Accuracy", fontsize=14, fontweight="bold")
+        plt.xlabel("Epoch")
+        plt.ylabel("Accuracy (%)")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.ylim([0, 100])
+        plt.tight_layout()
+        plt.show()
 
         # Training time per epoch
-        ax3.bar(epochs, self.results["epoch_times"], color="orange", alpha=0.7)
-        ax3.set_title("Training Time per Epoch", fontsize=14, fontweight="bold")
-        ax3.set_xlabel("Epoch")
-        ax3.set_ylabel("Time (seconds)")
-        ax3.grid(True, alpha=0.3)
+        plt.figure(figsize=(10, 6))
+        plt.bar(epochs, self.results["epoch_times"], color="orange", alpha=0.7)
+        plt.title("Training Time per Epoch", fontsize=14, fontweight="bold")
+        plt.xlabel("Epoch")
+        plt.ylabel("Time (seconds)")
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show()
 
         # Learning rate schedule
-        ax4.plot(epochs, self.results["learning_rates"], "purple", linewidth=2)
-        ax4.set_title("Learning Rate Schedule", fontsize=14, fontweight="bold")
-        ax4.set_xlabel("Epoch")
-        ax4.set_ylabel("Learning Rate")
-        ax4.ticklabel_format(style="scientific", axis="y", scilimits=(0, 0))
-        ax4.grid(True, alpha=0.3)
+        plt.figure(figsize=(10, 6))
+        plt.plot(epochs, self.results["learning_rates"], "purple", linewidth=2)
+        plt.title("Learning Rate Schedule", fontsize=14, fontweight="bold")
+        plt.xlabel("Epoch")
+        plt.ylabel("Learning Rate")
+        plt.ticklabel_format(style="scientific", axis="y", scilimits=(0, 0))
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show()
 
         # Early Stopping Counter History
         if "early_stopping_counter_history" in self.results:
-            ax5.plot(
+            plt.figure(figsize=(10, 6))
+            plt.plot(
                 epochs,
                 self.results["early_stopping_counter_history"],
                 "m-",
                 linewidth=2,
             )
-            ax5.set_title(
-                "Early Stopping Counter History", fontsize=14, fontweight="bold"
-            )
-            ax5.set_xlabel("Epoch")
-            ax5.set_ylabel("Counter")
-            ax5.grid(True, alpha=0.3)
-        else:
-            ax5.axis("off")
-
-        # Model Performance Summary
-        total_epochs = len(epochs)
-        actual_epochs = self.results.get("stopped_epoch", total_epochs)
-        best_epoch = (
-            self.results["val_accuracies"].index(max(self.results["val_accuracies"]))
-            + 1
-        )
-        performance_data = [
-            float(self.results["best_accuracy"]),
-            float(self.results["val_losses"][-1]),
-            int(actual_epochs),
-            float(sum(self.results["epoch_times"]) / 60),
-        ]
-        performance_labels = [
-            "Best Accuracy (%)",
-            "Final Val Loss",
-            "Total Epochs",
-            "Total Time (min)",
-        ]
-        ax6.barh(
-            performance_labels,
-            performance_data,
-            color=["green", "orange", "blue", "purple"],
-            alpha=0.7,
-        )
-        ax6.set_title("Training Summary", fontsize=14, fontweight="bold")
-        ax6.set_xlabel("Value")
-        for i, v in enumerate(performance_data):
-            ax6.text(v, i, f"{v:.2f}", va="center", fontweight="bold")
-        plt.tight_layout()
-        plt.show()
+            plt.title("Early Stopping Counter History", fontsize=14, fontweight="bold")
+            plt.xlabel("Epoch")
+            plt.ylabel("Counter")
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            plt.show()
 
     def early_stopping_analysis(self):
         """Prints early stopping analysis."""
@@ -604,121 +593,6 @@ class TrainingEvaluation:
             f"- Model saved with best validation loss: {self.results.get('best_val_loss', 'N/A'):.6f}"
         )
 
-    def dataset_summary_report(self):
-        """Prints and visualizes the dataset class distribution and summary."""
-        train_counts = (
-            self.trainer.train_dataset.class_counts
-            if hasattr(self.trainer.train_dataset, "class_counts")
-            else None
-        )
-        val_counts = (
-            self.trainer.val_dataset.class_counts
-            if hasattr(self.trainer.val_dataset, "class_counts")
-            else None
-        )
-
-        if train_counts is None:
-            train_counts = {cls: 0 for cls in self.class_names}
-            for _, target in self.trainer.train_dataset:
-                train_counts[self.class_names[target]] += 1
-        if val_counts is None:
-            val_counts = {cls: 0 for cls in self.class_names}
-            for _, target in self.trainer.val_dataset:
-                val_counts[self.class_names[target]] += 1
-        print("=== Dataset Exploration ===")
-        print("\nTraining set:")
-        for class_name, count in sorted(train_counts.items()):
-            print(f"  {class_name}: {count} images")
-        print(f"  Total training images: {sum(train_counts.values())}")
-        print("\nValidation set:")
-        for class_name, count in sorted(val_counts.items()):
-            print(f"  {class_name}: {count} images")
-        print(f"  Total validation images: {sum(val_counts.values())}")
-        # Visualize class distribution
-        classes = list(train_counts.keys())
-        train_values = list(train_counts.values())
-        val_values = [val_counts.get(cls, 0) for cls in classes]
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-        ax1.bar(classes, train_values, color="skyblue", alpha=0.7)
-        ax1.set_title(
-            "Training Set - Class Distribution", fontsize=14, fontweight="bold"
-        )
-        ax1.set_xlabel("Car Types")
-        ax1.set_ylabel("Number of Images")
-        ax1.tick_params(axis="x", rotation=45)
-        for i, v in enumerate(train_values):
-            ax1.text(
-                i, v + max(train_values) * 0.01, str(v), ha="center", fontweight="bold"
-            )
-        ax2.bar(classes, val_values, color="lightcoral", alpha=0.7)
-        ax2.set_title(
-            "Validation Set - Class Distribution", fontsize=14, fontweight="bold"
-        )
-        ax2.set_xlabel("Car Types")
-        ax2.set_ylabel("Number of Images")
-        ax2.tick_params(axis="x", rotation=45)
-        for i, v in enumerate(val_values):
-            ax2.text(
-                i, v + max(val_values) * 0.01, str(v), ha="center", fontweight="bold"
-            )
-        plt.tight_layout()
-        plt.show()
-        # Create a summary dataframe
-        df_summary = pd.DataFrame(
-            {
-                "Class": classes,
-                "Training": train_values,
-                "Validation": val_values,
-                "Total": [train_values[i] + val_values[i] for i in range(len(classes))],
-                "Train_Ratio": [
-                    (
-                        train_values[i] / (train_values[i] + val_values[i])
-                        if (train_values[i] + val_values[i]) > 0
-                        else 0
-                    )
-                    for i in range(len(classes))
-                ],
-            }
-        )
-        df_summary["Train_Ratio"] = df_summary["Train_Ratio"].round(3)
-        print("\n=== Dataset Summary ===")
-        print(df_summary.to_string(index=False))
-
-    def plot_training_metrics(self):
-        """Plot training and validation loss and accuracy curves, and print final values."""
-        if not self.results:
-            print("No training results to plot.")
-            return
-        metrics = self.results
-        import matplotlib.pyplot as plt
-
-        epochs = range(1, len(metrics["train_losses"]) + 1)
-        plt.figure(figsize=(12, 5))
-        # Loss
-        plt.subplot(1, 2, 1)
-        plt.plot(epochs, metrics["train_losses"], label="Train Loss")
-        plt.plot(epochs, metrics["val_losses"], label="Val Loss")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.title("Loss")
-        plt.legend()
-        # Accuracy
-        plt.subplot(1, 2, 2)
-        plt.plot(epochs, metrics["train_accuracies"], label="Train Acc")
-        plt.plot(epochs, metrics["val_accuracies"], label="Val Acc")
-        plt.xlabel("Epoch")
-        plt.ylabel("Accuracy (%)")
-        plt.title("Accuracy")
-        plt.legend()
-        plt.tight_layout()
-        plt.show()
-        print(
-            f"Final Train Loss: {metrics['train_losses'][-1]:.4f} | Final Val Loss: {metrics['val_losses'][-1]:.4f}"
-        )
-        print(
-            f"Final Train Acc: {metrics['train_accuracies'][-1]:.2f}% | Final Val Acc: {metrics['val_accuracies'][-1]:.2f}%"
-        )
-
     def full_report(self):
         """Runs all reporting and visualization methods in order."""
         self.plot_training_progress()
@@ -726,6 +600,4 @@ class TrainingEvaluation:
         self.training_statistics_summary()
         self.performance_metrics_table()
         self.plot_confusion_matrix()
-        self.plot_training_metrics()
-
         self.save_reports()
