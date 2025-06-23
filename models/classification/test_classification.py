@@ -77,6 +77,7 @@ class CarClassificationTester:
 
     def predict(self, image_path):
         img = Image.open(image_path).convert("RGB")
+        img = img.resize((48, 48), Image.LANCZOS)
         input_tensor = self.transform(img).unsqueeze(0)
 
         with torch.no_grad():
