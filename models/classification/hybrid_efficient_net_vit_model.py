@@ -242,10 +242,10 @@ class Encoder(nn.Module):
 
 
 class MBConv_Layers(nn.Module):
-    def __init__(self, in_chan, jumlah, expansion):
+    def __init__(self, in_chan, total, expansion):
         super().__init__()
         self.layers = nn.Sequential(
-            *[MBConv(in_chan, in_chan, expansion=expansion) for _ in range(jumlah)]
+            *[MBConv(in_chan, in_chan, expansion=expansion) for _ in range(total)]
         )
 
     def forward(self, x):
@@ -253,10 +253,10 @@ class MBConv_Layers(nn.Module):
 
 
 class Encoder_Layers(nn.Module):
-    def __init__(self, embed_dim, jumlah, num_heads):
+    def __init__(self, embed_dim, total, num_heads):
         super().__init__()
         self.layers = nn.Sequential(
-            *[Encoder(embed_dim, num_heads=num_heads) for _ in range(jumlah)]
+            *[Encoder(embed_dim, num_heads=num_heads) for _ in range(total)]
         )
 
     def forward(self, x):
@@ -284,8 +284,8 @@ class HybridEfficientNetViT(nn.Module):
 
         self.layers = nn.ModuleList(
             [
-                Encoder_Layers(embed_dim, jumlah=3, num_heads=num_heads),
-                MBConv_Layers(embed_dim, jumlah=3, expansion=2),
+                Encoder_Layers(embed_dim, total=3, num_heads=num_heads),
+                MBConv_Layers(embed_dim, total=3, expansion=2),
                 MBConv(
                     embed_dim,
                     embed_dim * 2,
@@ -294,8 +294,8 @@ class HybridEfficientNetViT(nn.Module):
                     padding=0,
                     expansion=1,
                 ),
-                Encoder_Layers(embed_dim * 2, jumlah=6, num_heads=num_heads),
-                MBConv_Layers(embed_dim * 2, jumlah=6, expansion=2),
+                Encoder_Layers(embed_dim * 2, total=6, num_heads=num_heads),
+                MBConv_Layers(embed_dim * 2, total=6, expansion=2),
                 MBConv(
                     embed_dim * 2,
                     embed_dim * 4,
@@ -304,7 +304,7 @@ class HybridEfficientNetViT(nn.Module):
                     padding=0,
                     expansion=1,
                 ),
-                Encoder_Layers(embed_dim * 4, jumlah=2, num_heads=num_heads),
+                Encoder_Layers(embed_dim * 4, total=2, num_heads=num_heads),
             ]
         )
 
