@@ -150,6 +150,8 @@ class CarClassifierTrainer:
         early_stopping_patience=7,
         early_stopping_delta=0.001,
         early_stopping_verbose=True,
+        pretrained=False,
+        freeze_stem=False,
     ):
         self.DEVICE = device or ("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using device: {self.DEVICE}")
@@ -166,6 +168,8 @@ class CarClassifierTrainer:
         self.USE_WEIGHTED_LOSS = use_weighted_loss
         self.USE_CLASS_BALANCING = use_class_balancing
         self.NUM_WORKERS = num_workers
+        self.PRETRAINED = pretrained
+        self.FREEZE_STEM = freeze_stem
 
         # Early stopping parameters
         self.EARLY_STOPPING_PATIENCE = early_stopping_patience
@@ -249,6 +253,8 @@ class CarClassifierTrainer:
             embed_dim=self.EMBED_DIM,
             num_heads=self.NUM_HEADS,
             dropout=self.DROPOUT,
+            pretrained=self.PRETRAINED,
+            freeze_stem=self.FREEZE_STEM,
         ).to(self.DEVICE)
 
         if self.USE_WEIGHTED_LOSS:
