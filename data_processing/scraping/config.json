@@ -1,0 +1,102 @@
+{
+    "car_classes": {
+        "mpv": [
+            "Toyota Avanza",
+            "Mitsubishi Xpander",
+            "Toyota Kijang Innova",
+            "Daihatsu Xenia",
+            "Suzuki Ertiga",
+            "Toyota Calya",
+            "Daihatsu Sigra",
+            "Honda Mobilio",
+            "Wuling Confero",
+            "Hyundai Stargazer"
+        ],
+        "crossover": [
+            "Honda HR-V",
+            "Honda CR-V",
+            "Toyota Raize",
+            "Daihatsu Rocky",
+            "Suzuki XL7",
+            "Hyundai Creta",
+            "Wuling Almaz",
+            "Mazda CX-5",
+            "Kia Seltos",
+            "Nissan Kicks"
+        ],
+        "offroad": [
+            "Toyota Fortuner",
+            "Mitsubishi Pajero Sport",
+            "Toyota Rush",
+            "Daihatsu Terios",
+            "Suzuki Jimny",
+            "Toyota Land Cruiser",
+            "Isuzu MU-X",
+            "Nissan Terra",
+            "Ford Everest",
+            "Chevrolet Trailblazer"
+        ],
+        "hatchback": [
+            "Honda Brio",
+            "Toyota Agya",
+            "Daihatsu Ayla",
+            "Toyota Yaris",
+            "Honda City Hatchback",
+            "Suzuki Baleno",
+            "Mazda 2",
+            "Wuling Air EV",
+            "Suzuki Ignis",
+            "Daihatsu Sirion"
+        ],
+        "sedan": [
+            "Honda Civic",
+            "Toyota Camry",
+            "Toyota Vios",
+            "Honda Accord",
+            "Toyota Corolla Altis",
+            "Mercedes-Benz C Class",
+            "BMW 3 Series",
+            "Honda City",
+            "Hyundai Ioniq 6",
+            "Mazda 3 Sedan"
+        ],
+        "pickup": [
+            "Suzuki Carry Pick Up",
+            "Daihatsu Gran Max Pick Up",
+            "Mitsubishi Colt L300",
+            "Isuzu Traga",
+            "Wuling Formo Max",
+            "DFSK Super Cab",
+            "Tata Super Ace",
+            "Tata Xenon",
+            "Esemka Bima",
+            "Kia Bongo"
+        ],
+        "van": [
+            "Toyota Hiace",
+            "Daihatsu Gran Max MB",
+            "Daihatsu Luxio",
+            "Suzuki APV",
+            "Hyundai Staria",
+            "Mercedes-Benz V-Class",
+            "DFSK Gelora",
+            "Nissan Evalia",
+            "Nissan Serena",
+            "Mazda Biante"
+        ],
+        "truck": [
+            "Mitsubishi Fuso Canter",
+            "Isuzu ELF",
+            "Hino Dutro",
+            "Toyota Dyna",
+            "Mitsubishi Colt Diesel",
+            "Hino Ranger",
+            "UD Trucks Quester",
+            "Volvo FH",
+            "Scania P-series",
+            "Mercedes-Benz Axor"
+        ]
+    },
+    "images_per_term": 200,
+    "max_pages_per_term": 3
+}
