@@ -1,5 +1,6 @@
 import fiftyone as fo
 import fiftyone.zoo as foz
+from fiftyone.types import dataset_types
 
 
 class CocoDatasetDownloader:
@@ -44,14 +45,14 @@ class CocoDatasetDownloader:
         print("\nExporting datasets to YOLO format...")
         self.train_dataset.export(
             export_dir=self.dataset_dir,
-            dataset_type=fo.types.YOLOv5DatasetType,
+            dataset_type=dataset_types.YOLOv5Dataset,
             label_field="ground_truth",
             split="train",
             classes=self.classes,
         )
         self.val_dataset.export(
             export_dir=self.dataset_dir,
-            dataset_type=fo.types.YOLOv5DatasetType,
+            dataset_type=dataset_types.YOLOv5Dataset,
             label_field="ground_truth",
             split="val",
             classes=self.classes,
