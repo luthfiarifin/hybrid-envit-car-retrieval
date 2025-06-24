@@ -12,7 +12,7 @@ class ChannelAttention(nn.Module):
     def __init__(self, in_planes, ratio=16):
         super(ChannelAttention, self).__init__()
 
-        # Use AdaptiveAvgPool2d to get a global spatial context
+        # Use AdaptiveAvgPool2d and AdaptiveMaxPool2d to get a global spatial context
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.max_pool = nn.AdaptiveMaxPool2d(1)
 
@@ -103,11 +103,14 @@ class EfficientNetB4_CBAM(nn.Module):
         self.backbone = models.efficientnet_b4(weights=weights)
 
         # --- Inject CBAM modules into the backbone ---
-        # We will add a CBAM module after several key blocks in EfficientNet.
-        # This enhances the model's ability to focus on discriminative features.
-        self.backbone.features[2].add_module("cbam", CBAM(48))  # After stage 2
-        self.backbone.features[3].add_module("cbam", CBAM(80))  # After stage 3
-        self.backbone.features[5].add_module("cbam", CBAM(160))  # After stage 5
+        # After stage 2 (output channels = 48)
+        self.backbone.features[2] = nn.Sequential(self.backbone.features[2], CBAM(48))
+
+        # After stage 3 (output channels = 80)
+        self.backbone.features[3] = nn.Sequential(self.backbone.features[3], CBAM(80))
+
+        # After stage 5 (output channels = 160)
+        self.backbone.features[5] = nn.Sequential(self.backbone.features[5], CBAM(160))
 
         # --- Replace the final classifier ---
         # We need to replace the original classifier with one for our number of classes.
