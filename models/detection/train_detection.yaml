@@ -1,5 +1,7 @@
-train: data_processing/data/coco_vehicles/images/train
-val: data_processing/data/coco_vehicles/images/val
+path: data_processing/data/coco_vehicles
+
+train: images/train
+val: images/val
 
 nc: 1
 names: ["car"]
