@@ -2,6 +2,7 @@ import os
 import matplotlib.pyplot as plt
 from ultralytics import YOLO
 from sklearn.metrics import ConfusionMatrixDisplay
+import numpy as np
 
 
 class YOLODetectionEvaluator:
@@ -32,12 +33,14 @@ class YOLODetectionEvaluator:
         self.metrics = self.model.val(data=self.yaml_path)
         print("Validation complete.")
         print("\n--- Key Performance Metrics ---")
-        print(f"  mAP50-95: {self.metrics.box.map:.4f}")
-        print(f"  mAP50:    {self.metrics.box.map50:.4f}")
-        print(f"  mAP75:    {self.metrics.box.map75:.4f}")
-        print(f"  Precision: {self.metrics.box.p[0]:.4f}")
-        print(f"  Recall:    {self.metrics.box.r[0]:.4f}")
-        print("-----------------------------\n")
+        print(f"{'Metric':<18}{'Value':>12}")
+        print(f"{'-'*30}")
+        print(f"{'mAP50-95':<18}{self.metrics.box.map:>12.4f}")
+        print(f"{'mAP50':<18}{self.metrics.box.map50:>12.4f}")
+        print(f"{'mAP75':<18}{self.metrics.box.map75:>12.4f}")
+        print(f"{'Mean Precision':<18}{np.mean(self.metrics.box.p):>12.4f}")
+        print(f"{'Mean Recall':<18}{np.mean(self.metrics.box.r):>12.4f}")
+        print(f"{'-'*30}\n")
 
     def plot_confusion_matrix(self):
         """
