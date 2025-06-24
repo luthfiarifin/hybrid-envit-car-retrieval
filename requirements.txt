@@ -10,3 +10,5 @@ scikit-learn
 albumentations
 
 tqdm
+
+fiftyone

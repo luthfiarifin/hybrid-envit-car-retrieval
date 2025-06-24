@@ -204,3 +204,4 @@ __marimo__/
 data_processing/data/dataset/
 data_processing/data/images/
 data_processing/data/rejected_images/
+data_processing/data/coco_vehicles/
