@@ -71,7 +71,7 @@ class EfficientNetB4_CBAM(nn.Module):
     A powerful and efficient architecture for fine-grained classification.
     It uses a pre-trained EfficientNet-B4 backbone and enhances its feature
     extraction capabilities by integrating CBAM attention modules.
-    UPDATED: Correctly injects CBAM modules between stages.
+    UPDATED: Uses a custom forward pass for robust CBAM injection.
     """
 
     def __init__(self, num_classes=8, pretrained=True):
@@ -92,34 +92,50 @@ class EfficientNetB4_CBAM(nn.Module):
 
         self.backbone = models.efficientnet_b4(weights=weights)
 
-        # --- Inject CBAM modules into the backbone (Corrected Method) ---
-        # Get the original feature blocks
-        features = list(self.backbone.features.children())
+        # --- Define CBAM modules for injection ---
+        # These will be applied manually in the forward pass.
+        # Channel numbers are based on the output of EfficientNet-B4 stages.
+        self.cbam1 = CBAM(48)  # After features[1]
+        self.cbam2 = CBAM(64)  # After features[2]
+        self.cbam3 = CBAM(128)  # After features[3]
 
-        # Create a new list of modules and insert CBAM at the correct positions
-        new_features = []
-        new_features.extend(features[0:3])  # Stages 0, 1, 2
-        new_features.append(CBAM(48))  # Inject after stage 2 (48 output channels)
+        # --- Extract feature stages ---
+        self.features_stage0 = self.backbone.features[0]
+        self.features_stage1 = self.backbone.features[1]
+        self.features_stage2 = self.backbone.features[2]
+        self.features_stage3 = self.backbone.features[3]
+        self.features_stage4_to_end = self.backbone.features[4:]
 
-        new_features.append(features[3])  # Stage 3
-        new_features.append(CBAM(80))  # Inject after stage 3 (80 output channels)
+        # The final parts of the original model remain the same
+        self.avgpool = self.backbone.avgpool
 
-        new_features.append(features[4])  # Stage 4
-        # Note: In EfficientNetB4, stage 5 is features[5].
-        new_features.append(features[5])  # Stage 5
-        new_features.append(CBAM(160))  # Inject after stage 5 (160 output channels)
-
-        new_features.extend(features[6:])  # Add the remaining stages
-
-        # Replace the original features with the new sequential module
-        self.backbone.features = nn.Sequential(*new_features)
-
-        # --- Replace the final classifier ---
+        # Replace the final classifier
         in_features = self.backbone.classifier[1].in_features
-        self.backbone.classifier = nn.Sequential(
+        self.classifier = nn.Sequential(
             nn.Dropout(p=0.4, inplace=True),
             nn.Linear(in_features, num_classes),
         )
 
+        self.backbone.classifier = nn.Identity()
+
     def forward(self, x):
-        return self.backbone(x)
+        # --- Custom Forward Pass with CBAM Injection ---
+        x = self.features_stage0(x)
+
+        x = self.features_stage1(x)
+        x = self.cbam1(x)  # Inject CBAM 1
+
+        x = self.features_stage2(x)
+        x = self.cbam2(x)  # Inject CBAM 2
+
+        x = self.features_stage3(x)
+        x = self.cbam3(x)  # Inject CBAM 3
+
+        x = self.features_stage4_to_end(x)
+
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+
+        x = self.classifier(x)
+
+        return x
