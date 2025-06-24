@@ -1,0 +1,10 @@
+{
+  "early_stopping_triggered": true,
+  "stopped_epoch": 25,
+  "planned_epochs": 50,
+  "epochs_saved": 25,
+  "best_val_loss": 0.37398507044865537,
+  "patience_used": 7,
+  "delta_threshold": 0.001,
+  "time_saved_minutes": 75.42003591855367
+}
