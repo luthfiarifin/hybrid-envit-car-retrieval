@@ -128,7 +128,7 @@ class CarAugmentation:
 
 class CarClassifierTrainer:
     """
-    CarClassifierTrainer: A class to train a hybrid ResNet-ViT model for car classification.
+    CarClassifierTrainer: A class to train a model for car classification.
     """
 
     def __init__(
@@ -140,7 +140,7 @@ class CarClassifierTrainer:
         batch_size=32,
         num_epochs=25,
         device=None,
-        result_path="carvit_model.pth",
+        result_path="car_classifier_model.pth",
         use_weighted_loss=True,
         use_class_balancing=False,
         num_workers=0,
