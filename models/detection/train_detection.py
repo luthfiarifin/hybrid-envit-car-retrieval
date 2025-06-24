@@ -1,3 +1,4 @@
+import os
 from ultralytics import YOLO
 
 
@@ -28,7 +29,12 @@ class YOLODetectionTrainer:
         self.model = YOLO(self.model_name)
         print("Pre-trained model loaded successfully.")
 
-    def train(self, project="yolo_finetune", name="vehicle_detection", exist_ok=True):
+    def train(
+        self,
+        project="yolo_finetune",
+        name="vehicle_detection",
+        exist_ok=True,
+    ):
         """
         Fine-tunes the YOLO model on the custom dataset.
         """
@@ -48,6 +54,6 @@ class YOLODetectionTrainer:
             name=name,
             exist_ok=exist_ok,
         )
-        self.save_dir = self.results.save_dir
-        print("Training complete!")
-        return self.save_dir
+
+        save_dir = os.path.join(project, name)
+        return save_dir
