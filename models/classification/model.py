@@ -71,7 +71,6 @@ class EfficientNetB4_CBAM(nn.Module):
     A powerful and efficient architecture for fine-grained classification.
     It uses a pre-trained EfficientNet-B4 backbone and enhances its feature
     extraction capabilities by integrating CBAM attention modules.
-    UPDATED: Uses a custom forward pass for robust CBAM injection.
     """
 
     def __init__(self, num_classes=8, pretrained=True):
@@ -92,12 +91,10 @@ class EfficientNetB4_CBAM(nn.Module):
 
         self.backbone = models.efficientnet_b4(weights=weights)
 
-        # --- Define CBAM modules for injection ---
-        # These will be applied manually in the forward pass.
-        # Channel numbers are based on the output of EfficientNet-B4 stages.
-        self.cbam1 = CBAM(48)  # After features[1]
-        self.cbam2 = CBAM(64)  # After features[2]
-        self.cbam3 = CBAM(128)  # After features[3]
+        # --- Define CBAM modules for injection with CORRECT channel sizes ---
+        self.cbam1 = CBAM(32)  # After features[1] which outputs 32 channels
+        self.cbam2 = CBAM(56)  # After features[2] which outputs 56 channels
+        self.cbam3 = CBAM(112)  # After features[3] which outputs 112 channels
 
         # --- Extract feature stages ---
         self.features_stage0 = self.backbone.features[0]
@@ -123,13 +120,13 @@ class EfficientNetB4_CBAM(nn.Module):
         x = self.features_stage0(x)
 
         x = self.features_stage1(x)
-        x = self.cbam1(x)  # Inject CBAM 1
+        x = self.cbam1(x)  # Inject CBAM 1 (expects 32 channels)
 
         x = self.features_stage2(x)
-        x = self.cbam2(x)  # Inject CBAM 2
+        x = self.cbam2(x)  # Inject CBAM 2 (expects 56 channels)
 
         x = self.features_stage3(x)
-        x = self.cbam3(x)  # Inject CBAM 3
+        x = self.cbam3(x)  # Inject CBAM 3 (expects 112 channels)
 
         x = self.features_stage4_to_end(x)
 
