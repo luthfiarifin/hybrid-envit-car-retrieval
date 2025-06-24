@@ -207,5 +207,5 @@ data_processing/data/rejected_images/
 data_processing/data/coco_vehicles/
 
 # Ignore the models results
-models/classification/results/
-models/detection/yolo_finetune/vehicle_detection/weights/
+# models/classification/results/
+# models/detection/yolo_finetune/vehicle_detection/weights/
