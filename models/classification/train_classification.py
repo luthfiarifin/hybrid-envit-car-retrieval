@@ -16,7 +16,7 @@ from tqdm import tqdm
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from models.classification.hybrid_efficient_net_vit_model import HybridEfficientNetViT
+from models.classification.model import EfficientNetB4_CBAM
 
 
 class EarlyStopping:
@@ -136,9 +136,6 @@ class CarClassifierTrainer:
         train_dir="dataset/train",
         val_dir="dataset/val",
         num_classes=8,
-        embed_dim=768,
-        num_heads=12,
-        dropout=0.1,
         learning_rate=1e-4,
         batch_size=32,
         num_epochs=25,
@@ -151,14 +148,10 @@ class CarClassifierTrainer:
         early_stopping_delta=0.001,
         early_stopping_verbose=True,
         pretrained=False,
-        freeze_stem=False,
     ):
         self.DEVICE = device or ("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using device: {self.DEVICE}")
         self.NUM_CLASSES = num_classes
-        self.EMBED_DIM = embed_dim
-        self.NUM_HEADS = num_heads
-        self.DROPOUT = dropout
         self.LEARNING_RATE = learning_rate
         self.BATCH_SIZE = batch_size
         self.NUM_EPOCHS = num_epochs
@@ -169,7 +162,6 @@ class CarClassifierTrainer:
         self.USE_CLASS_BALANCING = use_class_balancing
         self.NUM_WORKERS = num_workers
         self.PRETRAINED = pretrained
-        self.FREEZE_STEM = freeze_stem
 
         # Early stopping parameters
         self.EARLY_STOPPING_PATIENCE = early_stopping_patience
@@ -248,13 +240,9 @@ class CarClassifierTrainer:
         )
 
     def _init_model(self):
-        self.model = HybridEfficientNetViT(
+        self.model = EfficientNetB4_CBAM(
             num_classes=self.NUM_CLASSES,
-            embed_dim=self.EMBED_DIM,
-            num_heads=self.NUM_HEADS,
-            dropout=self.DROPOUT,
             pretrained=self.PRETRAINED,
-            freeze_stem=self.FREEZE_STEM,
         ).to(self.DEVICE)
 
         if self.USE_WEIGHTED_LOSS:

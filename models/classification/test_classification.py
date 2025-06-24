@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 import random
 
-from models.classification.hybrid_efficient_net_vit_model import HybridEfficientNetViT
+from models.classification.model import EfficientNetB4_CBAM
 
 
 class CarClassificationTester:
@@ -47,7 +47,7 @@ class CarClassificationTester:
             model_files.sort()
             self.model_path = os.path.join(results_dir, model_files[-1])
 
-        model = HybridEfficientNetViT(num_classes=self.num_classes)
+        model = EfficientNetB4_CBAM(num_classes=self.num_classes)
         model.load_state_dict(torch.load(self.model_path, map_location="cpu"))
         model.eval()
         return model
