@@ -11,8 +11,6 @@ class ChannelAttention(nn.Module):
 
     def __init__(self, in_planes, ratio=16):
         super(ChannelAttention, self).__init__()
-
-        # Use AdaptiveAvgPool2d and AdaptiveMaxPool2d to get a global spatial context
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.max_pool = nn.AdaptiveMaxPool2d(1)
 
@@ -39,17 +37,12 @@ class SpatialAttention(nn.Module):
 
     def __init__(self, kernel_size=7):
         super(SpatialAttention, self).__init__()
-
-        # A convolution to learn the spatial weights
         self.conv1 = nn.Conv2d(2, 1, kernel_size, padding=kernel_size // 2, bias=False)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        # Aggregate channel information
         avg_out = torch.mean(x, dim=1, keepdim=True)
         max_out, _ = torch.max(x, dim=1, keepdim=True)
-
-        # Concatenate to create a rich spatial descriptor
         x = torch.cat([avg_out, max_out], dim=1)
         x = self.conv1(x)
         return self.sigmoid(x)
@@ -78,13 +71,10 @@ class EfficientNetB4_CBAM(nn.Module):
     A powerful and efficient architecture for fine-grained classification.
     It uses a pre-trained EfficientNet-B4 backbone and enhances its feature
     extraction capabilities by integrating CBAM attention modules.
+    UPDATED: Correctly injects CBAM modules between stages.
     """
 
-    def __init__(
-        self,
-        num_classes=8,
-        pretrained=True,
-    ):
+    def __init__(self, num_classes=8, pretrained=True):
         """
         Args:
             num_classes (int): The number of output classes for your car dataset.
@@ -102,18 +92,29 @@ class EfficientNetB4_CBAM(nn.Module):
 
         self.backbone = models.efficientnet_b4(weights=weights)
 
-        # --- Inject CBAM modules into the backbone ---
-        # After stage 2 (output channels = 48)
-        self.backbone.features[2] = nn.Sequential(self.backbone.features[2], CBAM(48))
+        # --- Inject CBAM modules into the backbone (Corrected Method) ---
+        # Get the original feature blocks
+        features = list(self.backbone.features.children())
 
-        # After stage 3 (output channels = 80)
-        self.backbone.features[3] = nn.Sequential(self.backbone.features[3], CBAM(80))
+        # Create a new list of modules and insert CBAM at the correct positions
+        new_features = []
+        new_features.extend(features[0:3])  # Stages 0, 1, 2
+        new_features.append(CBAM(48))  # Inject after stage 2 (48 output channels)
 
-        # After stage 5 (output channels = 160)
-        self.backbone.features[5] = nn.Sequential(self.backbone.features[5], CBAM(160))
+        new_features.append(features[3])  # Stage 3
+        new_features.append(CBAM(80))  # Inject after stage 3 (80 output channels)
+
+        new_features.append(features[4])  # Stage 4
+        # Note: In EfficientNetB4, stage 5 is features[5].
+        new_features.append(features[5])  # Stage 5
+        new_features.append(CBAM(160))  # Inject after stage 5 (160 output channels)
+
+        new_features.extend(features[6:])  # Add the remaining stages
+
+        # Replace the original features with the new sequential module
+        self.backbone.features = nn.Sequential(*new_features)
 
         # --- Replace the final classifier ---
-        # We need to replace the original classifier with one for our number of classes.
         in_features = self.backbone.classifier[1].in_features
         self.backbone.classifier = nn.Sequential(
             nn.Dropout(p=0.4, inplace=True),
