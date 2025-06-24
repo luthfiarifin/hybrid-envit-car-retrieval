@@ -1,0 +1,8 @@
+crossover
+hatchback
+mpv
+offroad
+pickup
+sedan
+truck
+van
