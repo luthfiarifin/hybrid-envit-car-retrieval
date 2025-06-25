@@ -27,7 +27,7 @@ The project follows a step-by-step pipeline, from data gathering to final infere
 
 The process includes scraping images from multiple sources, validating and cropping images, splitting the dataset, and generating reports. Each step ensures the dataset is clean, organized, and suitable for machine learning.
 
-- **Notebook**: `1_run_scraper_into_dataset.ipynb`
+- **Notebook**: [`1_run_scraper_into_dataset.ipynb`](1_run_scraper_into_dataset.ipynb)
 - **Sources Used**: OLX, Carmudi, Mobil123
 - **Overview**:
   - **Scraping**: Collect car images from multiple online sources, ensuring non-duplicate URLs.
@@ -41,7 +41,7 @@ The process includes scraping images from multiple sources, validating and cropp
 
 It provides a workflow for preparing data, training, and evaluating a YOLOv12n model on Indonesian vehicle images, including environment setup, dataset preparation, model fine-tuning, and performance evaluation with visualizations.
 
-- **Notebook**: `2_finetune_the_detection_model.ipynb`
+- **Notebook**: [`2_finetune_the_detection_model.ipynb`](2_finetune_the_detection_model.ipynb)
 - **Model Used**: **YOLOv12n**, a lightweight and efficient object detection model, suitable for real-time vehicle detection tasks.
 - **Overview**:
   - **Dataset**: COCO vehicle dataset, converted to YOLO format for training.
@@ -54,10 +54,11 @@ This notebook implements custom models based on the approach described in the pa
 
 It demonstrates the full pipeline for training and evaluating deep learning models for Indonesian car type classification using a custom dataset. The workflow includes dataset preparation, model training with class imbalance handling, evaluation, and visualization of results.
 
-- **Notebook**: `3_train_the_classification_model.ipynb`
+- **Notebook**: [`3_train_the_classification_model.ipynb`](3_train_the_classification_model.ipynb)
 - **Dataset Overview**:
-  - **Source**: The dataset was collected using a custom web scraper (see notebook `1_run_scraper_into_dataset.ipynb`) to gather Indonesian car images.
-  - **Final Dataset**: The cleaned and organized dataset is available at [Kaggle: indonesian-cars-classification-dataset](https://www.kaggle.com/datasets/muhammadluthfiarifin/indonesian-cars-classification-dataset).
+  - **Source**: The dataset used for classification testing is obtained directly by the custom web scraper (see notebook `1_run_scraper_into_dataset.ipynb`).
+  - **Kaggle Link**: [Indonesian Cars Classification Dataset](https://www.kaggle.com/datasets/muhammadluthfiarifin/indonesian-cars-classification-dataset)
+  - **Final Dataset**: The cleaned and organized dataset is available at the Kaggle link above.
   - **Structure**: The dataset is split into train, validation, and test sets, each containing images for 8 car classes.
 - **Model Used**: **EfficientNetB4-CBAM**, which uses EfficientNet-B4 as the backbone and integrates Convolutional Block Attention Module (CBAM) blocks to enhance feature representation.
 - **Overview**:
@@ -71,12 +72,11 @@ It demonstrates the full pipeline for training and evaluating deep learning mode
 
 The classifier model is a hybrid architecture that combines EfficientNet-B4 as the backbone with Convolutional Block Attention Module (CBAM) blocks to enhance feature representation. The CBAM modules sequentially apply channel and spatial attention to the feature maps extracted from each stage of EfficientNet-B4, allowing the model to focus on the most informative features and regions. After attention refinement, the final feature map is passed through a classifier head consisting of global average pooling, dropout, and fully connected layers to produce the class label and confidence score.
 
-
 ### 4. Final Inference Pipeline
 
 The last step integrates the detection and classification models into a single pipeline that processes an input video and produces an annotated output video.
 
-- **Notebook**: `4_final_traffic_cam_test.ipynb`
+- **Notebook**: [`4_final_traffic_cam_test.ipynb`](4_final_traffic_cam_test.ipynb)
 - **Description**: This notebook loads the input video (`traffic_test.mp4`). For each frame, it:
   1. Uses the fine-tuned YOLO model to detect cars.
   2. Crops the image of each detected car from the frame.
@@ -105,16 +105,21 @@ The last step integrates the detection and classification models into a single p
 ## Setup and Installation
 
 1. **Clone the repository:**
+
     ```bash
     git clone https://github.com/luthfiarifin/hybrid-envit-car-retrieval.git
     cd hybrid-envit-car-retrieval
     ```
+
 2. **Create a virtual environment (recommended):**
+
     ```bash
     python -m venv .venv
     source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
     ```
+
 3. **Install the required dependencies:**
+
     ```bash
     pip install -r requirements.txt
     ```
@@ -123,10 +128,10 @@ The last step integrates the detection and classification models into a single p
 
 To execute the full pipeline from data collection to final inference, run the Jupyter notebooks in sequential order.
 
-1. **Run `1_run_scraper_into_dataset.ipynb`**: This will scrape the web to build the car dataset for the classification task.
-2. **Run `2_finetune_the_detection_model.ipynb`**: This will fine-tune the YOLOv12n object detection model.
-3. **Run `3_train_the_classification_model.ipynb`**: This will train the classification model on the scraped data.
-4. **Run `4_final_traffic_cam_test.ipynb`**: This will execute the final pipeline on the provided `traffic_test.mp4`, generating a `traffic_test_classified.mp4` with the results.
+1. **Run [`1_run_scraper_into_dataset.ipynb`](1_run_scraper_into_dataset.ipynb)**: This will scrape the web to build the car dataset for the classification task.
+2. **Run [`2_finetune_the_detection_model.ipynb`](2_finetune_the_detection_model.ipynb)**: This will fine-tune the YOLOv12n object detection model.
+3. **Run [`3_train_the_classification_model.ipynb`](3_train_the_classification_model.ipynb)**: This will train the classification model on the scraped data.
+4. **Run [`4_final_traffic_cam_test.ipynb`](4_final_traffic_cam_test.ipynb)**: This will execute the final pipeline on the provided `traffic_test.mp4`, generating a `traffic_test_classified.mp4` with the results.
 
 ---
 
@@ -142,10 +147,7 @@ This will open a window displaying the detection and classification results on t
 
 The final output is a video where each detected car is enclosed in a bounding box with a label indicating its classified type.
 
-<p align="center">
-  <b>Sample Output:</b><br>
-  <video src="traffic_test_classified.mp4" controls width="600"></video>
-</p>
+**[Click here to download and view the sample output video](traffic_test_classified.mp4)**
 
 ## Disclaimer
 
