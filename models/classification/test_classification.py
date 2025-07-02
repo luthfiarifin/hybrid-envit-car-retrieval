@@ -30,6 +30,7 @@ class CarClassificationTester:
         self.num_classes = num_classes
         self.grid_rows = grid_rows
         self.grid_cols = grid_cols
+        self.vanilla = vanilla
         self.model = self._load_model()
         self.transform = transforms.Compose(
             [
@@ -38,7 +39,6 @@ class CarClassificationTester:
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ]
         )
-        self.vanilla = vanilla
 
     def _load_model(self):
         if self.model_path is None:
