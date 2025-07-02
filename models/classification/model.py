@@ -231,3 +231,30 @@ class EfficientNetB4_CBAM(nn.Module):
         output = self.classifier(pooled_output)
 
         return output
+
+
+class VanillaEfficientNetB4(nn.Module):
+    """
+    Vanilla EfficientNet-B4 model for classification.
+
+    This model uses a pre-trained EfficientNet-B4 as its backbone without any additional attention mechanisms.
+    """
+
+    def __init__(self, num_classes=8, pretrained=True):
+        """
+        Initializes the Vanilla EfficientNet-B4 model.
+
+        Args:
+            num_classes (int): The number of output classes (e.g., 2 for benign/malignant).
+            pretrained (bool): Whether to use a pre-trained EfficientNet backbone.
+        """
+        super(VanillaEfficientNetB4, self).__init__()
+
+        # Load the EfficientNet-B4 model from the 'timm' library.
+        self.backbone = timm.create_model(
+            "efficientnet_b4", pretrained=pretrained, num_classes=num_classes
+        )
+
+    def forward(self, x):
+        # Forward pass through the EfficientNet backbone.
+        return self.backbone(x)

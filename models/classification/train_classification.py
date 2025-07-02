@@ -16,7 +16,7 @@ from tqdm import tqdm
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from models.classification.model import EfficientNetB4_CBAM
+from models.classification.model import EfficientNetB4_CBAM, VanillaEfficientNetB4
 
 
 class EarlyStopping:
@@ -148,6 +148,7 @@ class CarClassifierTrainer:
         early_stopping_delta=0.001,
         early_stopping_verbose=True,
         pretrained=False,
+        vanilla=False,
     ):
         self.DEVICE = device or ("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using device: {self.DEVICE}")
@@ -162,6 +163,7 @@ class CarClassifierTrainer:
         self.USE_CLASS_BALANCING = use_class_balancing
         self.NUM_WORKERS = num_workers
         self.PRETRAINED = pretrained
+        self.VANILLA = vanilla
 
         # Early stopping parameters
         self.EARLY_STOPPING_PATIENCE = early_stopping_patience
@@ -240,10 +242,16 @@ class CarClassifierTrainer:
         )
 
     def _init_model(self):
-        self.model = EfficientNetB4_CBAM(
-            num_classes=self.NUM_CLASSES,
-            pretrained=self.PRETRAINED,
-        ).to(self.DEVICE)
+        if self.VANILLA:
+            self.model = VanillaEfficientNetB4(
+                num_classes=self.NUM_CLASSES,
+                pretrained=self.PRETRAINED,
+            ).to(self.DEVICE)
+        else:
+            self.model = EfficientNetB4_CBAM(
+                num_classes=self.NUM_CLASSES,
+                pretrained=self.PRETRAINED,
+            ).to(self.DEVICE)
 
         if self.USE_WEIGHTED_LOSS:
             # Calculate class weights based on inverse frequency

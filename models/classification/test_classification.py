@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 import random
 
-from models.classification.model import EfficientNetB4_CBAM
+from models.classification.model import EfficientNetB4_CBAM, VanillaEfficientNetB4
 
 
 class CarClassificationTester:
@@ -22,6 +22,7 @@ class CarClassificationTester:
         num_classes=8,
         grid_rows=8,
         grid_cols=10,
+        vanilla=False,
     ):
         self.test_dir = test_dir
         self.class_names = class_names
@@ -37,6 +38,7 @@ class CarClassificationTester:
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ]
         )
+        self.vanilla = vanilla
 
     def _load_model(self):
         if self.model_path is None:
@@ -47,7 +49,11 @@ class CarClassificationTester:
             model_files.sort()
             self.model_path = os.path.join(results_dir, model_files[-1])
 
-        model = EfficientNetB4_CBAM(num_classes=self.num_classes)
+        if self.vanilla:
+            model = VanillaEfficientNetB4(num_classes=self.num_classes)
+        else:
+            model = EfficientNetB4_CBAM(num_classes=self.num_classes)
+
         model.load_state_dict(torch.load(self.model_path, map_location="cpu"))
         model.eval()
         return model
